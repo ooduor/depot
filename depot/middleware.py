@@ -119,7 +119,10 @@ class FileServeApp(object):
         if self.replace_wsgi_filewrapper is True:
             environ['wsgi.file_wrapper'] = _FileIter
 
-        return environ.get('wsgi.file_wrapper', _FileIter)(self.file, _BLOCK_SIZE)
+        if 'wsgi.file_wrapper' in environ:
+            return environ['wsgi.file_wrapper'](self.file, _BLOCK_SIZE)
+        else:
+            return iter(lambda: self.file.read(_BLOCK_SIZE), '')
 
 
 class DepotMiddleware(object):
